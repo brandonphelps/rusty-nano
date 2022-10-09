@@ -3,7 +3,7 @@
 
 #![feature(format_args_nl)]
 
-use core::fmt;
+use core::{fmt, marker};
 
 use arduino_nano33iot as bsp;
 use bsp::hal;
@@ -18,12 +18,35 @@ use hal::delay::Delay;
 use hal::pac::{CorePeripherals, Peripherals};
 use hal::prelude::*;
 
-// use hal::time::MegaHertz;
 
-
+mod sercom0;
 mod syncronization;
 mod console;
 mod timer;
+
+use sercom0::usart::Reg;
+
+
+pub struct R<U, T> {
+    pub(crate) bits: U,
+    _reg: marker::PhantomData<T>,
+}
+
+impl<U, T> R<U, T>
+where
+    U: Copy
+{
+    pub(crate) fn new(bits: U) -> Self {
+        Self {
+            bits,
+            _reg: marker::PhantomData
+        }
+    }
+
+    pub fn bits(&self) -> U {
+        self.bits
+    }
+}
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
@@ -44,7 +67,7 @@ macro_rules! print {
 /// Carbon copy from <https://doc.rust-lang.org/src/std/macros.rs.html>
 #[macro_export]
 macro_rules! println {
-    () => ($crate::print!("\n"));
+    () => ($crate::print!("\n\r"));
     ($($arg:tt)*) => ({
         _print(format_args_nl!($($arg)*));
     })
@@ -87,14 +110,32 @@ fn main() -> ! {
         pins.tx,
     );
 
+
+    let usart =  unsafe { sercom0::SERCOM0::ptr().as_ref().unwrap().usart()  };
+    
     console::console_init(uart);
-   
+
+    println!("Debug info");
+    unsafe {
+        println!("SERCOM0: {:x?}", sercom0::SERCOM0::ptr() as u32);
+        println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
+        println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
+        println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
+        println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
+        println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
+        println!("CTRLA: {:?}", usart.ctrla.read().bits());
+        println!("CTRLA: {:?}", usart.ctrlb.read().bits());
+    }
+
     loop {
         timer::timer().delay(200);
         led.set_low().unwrap();
         timer::timer().delay(200);
         println!("Hello World from within arduino rust with globals");
         led.set_high().unwrap();
+
+
+
         /*
         for ch in 33..127 {
             uart.write(ch).unwrap();

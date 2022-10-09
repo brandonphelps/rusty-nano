@@ -13,3 +13,7 @@ arduino_nano33iot = { version = "0.7.0",features = ["usb", "rt"] }
 panic-halt = "0.2.0"
 usb-device = "0.2.8"
 usbd-serial = "0.1.1"
+
+
+[dependencies.vcell]
+version = "0.1.2"
