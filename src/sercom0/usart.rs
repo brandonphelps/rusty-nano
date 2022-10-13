@@ -3,13 +3,12 @@ pub struct _CTRLA;
 
 impl crate::Readable for CTRLA {}
 
-impl crate::Writeable for CTRLA {} 
+impl crate::Writeable for CTRLA {}
 
 pub type CTRLB = crate::Reg<u32, _CTRLB>;
 pub struct _CTRLB;
 impl crate::Readable for CTRLB {}
 impl crate::Writeable for CTRLB {}
-
 
 pub type BAUD = crate::Reg<u16, _BAUD>;
 pub struct _BAUD;
@@ -41,10 +40,14 @@ pub struct _INTFLAG;
 impl crate::Readable for INTFLAG {}
 impl crate::Writeable for INTFLAG {}
 
+pub mod intflag;
+
 pub type STATUS = crate::Reg<u16, _STATUS>;
 pub struct _STATUS;
 impl crate::Readable for STATUS {}
 impl crate::Writeable for STATUS {}
+
+pub mod status;
 
 pub type SYNCBUSY = crate::Reg<u32, _SYNCBUSY>;
 pub struct _SYNCBUSY;
@@ -55,6 +58,8 @@ pub type DATA = crate::Reg<u16, _DATA>;
 pub struct _DATA;
 impl crate::Readable for DATA {}
 impl crate::Writeable for DATA {}
+
+pub mod data;
 
 pub type DBGCTRL = crate::Reg<u8, _DBGCTRL>;
 pub struct _DBGCTRL;

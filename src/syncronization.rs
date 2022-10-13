@@ -1,4 +1,3 @@
-
 use core::cell::UnsafeCell;
 
 pub mod interface {
@@ -12,7 +11,7 @@ pub struct NullLock<T>
 where
     T: ?Sized,
 {
-    data: UnsafeCell<T>
+    data: UnsafeCell<T>,
 }
 
 // this should have + Send and + Sync
@@ -28,7 +27,6 @@ impl<T> NullLock<T> {
         }
     }
 }
-
 
 impl<T> interface::Mutex for NullLock<T> {
     type Data = T;

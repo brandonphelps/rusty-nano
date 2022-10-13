@@ -1,6 +1,4 @@
-
-
-use crate::syncronization::interface::Mutex;
+use crate::{sercom0, syncronization::interface::Mutex};
 
 use arduino_nano33iot as bsp;
 use bsp::hal;
@@ -31,7 +29,6 @@ struct UartInner {
     value: NullLock<super::bsp::Uart>,
 }
 
-
 impl UartInner {
     fn write_char(&mut self, c: char) {
         // todo: handle write result.
@@ -43,41 +40,49 @@ impl fmt::Write for UartInner {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for c in s.chars() {
             self.write_char(c);
-            crate::timer::timer().delay(100);
+
+            let usart =  unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart()  };
+
+                // wait till the dre bit is empty.
+                while !usart.intflag.read().txc().bit() {
+                    
+            }
+            // crate::timer::timer().delay(100);
         }
         Ok(())
     }
 }
-
 
 struct NinaUart {
     inner: Option<UartInner>,
 }
 
 impl NinaUart {
-    const unsafe fn new() -> Self { Self { inner: None } }
+    const unsafe fn new() -> Self {
+        Self { inner: None }
+    }
 
     unsafe fn set_uart(&mut self, uart: super::bsp::Uart) {
-        self.inner = Some(UartInner { value: NullLock::new(uart) });
+        self.inner = Some(UartInner {
+            value: NullLock::new(uart),
+        });
     }
 }
 
-impl interface::Write for NinaUart  {
+impl interface::Write for NinaUart {
     fn write_char(&mut self, c: char) {
         match self.inner {
             Some(ref mut v) => {
                 v.write_char(c);
             }
-            None => { }
+            None => {}
         }
     }
 
     fn write_fmt(&mut self, args: core::fmt::Arguments) -> fmt::Result {
         match self.inner {
-            Some(ref mut v) => {
-                fmt::Write::write_fmt(v, args)
-            },
-            None => { Ok(()) }
+            Some(ref mut v) => fmt::Write::write_fmt(v, args),
+            None => Ok(()),
         }
     }
 
@@ -86,11 +91,10 @@ impl interface::Write for NinaUart  {
     }
 }
 
-impl interface::Statistics for NinaUart {
-}
-impl interface::All for NinaUart  {}
+impl interface::Statistics for NinaUart {}
+impl interface::All for NinaUart {}
 
-// todo: coudl this mut be removed? 
+// todo: coudl this mut be removed?
 static mut CONSOLE_UART: NinaUart = unsafe { NinaUart::new() };
 
 pub fn console() -> &'static mut dyn interface::All {
@@ -98,5 +102,7 @@ pub fn console() -> &'static mut dyn interface::All {
 }
 
 pub fn console_init(uart: super::bsp::Uart) {
-    unsafe { CONSOLE_UART.set_uart(uart); }
+    unsafe {
+        CONSOLE_UART.set_uart(uart);
+    }
 }

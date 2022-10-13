@@ -21,7 +21,9 @@ struct DelayTimer {
 
 impl DelayTimer {
     unsafe fn set_timer(&mut self, delay: super::Delay) {
-        self.inner = Some(DelayTimerInner { value: NullLock::new(delay) });
+        self.inner = Some(DelayTimerInner {
+            value: NullLock::new(delay),
+        });
     }
 }
 
@@ -34,13 +36,13 @@ impl Timer for DelayTimer {
         match self.inner {
             Some(ref v) => {
                 v.delay(time);
-            },
-            None => { }
+            }
+            None => {}
         }
     }
 }
 
-static mut GLOBAL_TIMER: DelayTimer =  DelayTimer { inner: None };
+static mut GLOBAL_TIMER: DelayTimer = DelayTimer { inner: None };
 
 pub fn timer() -> &'static mut dyn Timer {
     unsafe { &mut GLOBAL_TIMER }

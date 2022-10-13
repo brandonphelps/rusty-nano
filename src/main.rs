@@ -1,6 +1,5 @@
 #![no_std]
 #![no_main]
-
 #![feature(format_args_nl)]
 
 use core::fmt;
@@ -18,18 +17,17 @@ use hal::delay::Delay;
 use hal::pac::{CorePeripherals, Peripherals};
 use hal::prelude::*;
 
-
+mod console;
+mod generic;
 mod sercom0;
 mod syncronization;
-mod console;
 mod timer;
-mod generic;
 
-use generic::{Readable, Writeable, Reg, R, W};
+use generic::{ResetValue, Readable, Reg, Writeable, R, W};
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
-    // todo: handle result. 
+    // todo: handle result.
     console::console().write_fmt(args);
 }
 
@@ -54,7 +52,6 @@ macro_rules! println {
 
 #[entry]
 fn main() -> ! {
-
     let mut peripherals = Peripherals::take().unwrap();
     let core = CorePeripherals::take().unwrap();
     let mut clocks = GenericClockController::with_internal_32kosc(
@@ -90,31 +87,47 @@ fn main() -> ! {
     );
 
 
-    let usart =  unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart()  };
-    
+    let usart = unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart() };
+
+
     console::console_init(uart);
 
     println!("Debug info");
-    unsafe {
-        println!("SERCOM0: {:x?}", sercom0::SERCOM5::ptr() as u32);
-        println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
-        println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
-        println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
-        println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
-        println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
-        println!("CTRLA: {:x?}", usart.ctrla.read().bits());
-        println!("CTRLB: {:x?}", usart.ctrlb.read().bits());
+    println!("SERCOM0: {:x?}", sercom0::SERCOM5::ptr() as u32);
+    println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
+    println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
+    println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
+    println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
+    println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
+    println!("CTRLA: {:x?}", usart.ctrla.read().bits());
+    println!("CTRLB: {:x?}", usart.ctrlb.read().bits());
+    
+    /*
+    println!("Disabling uart");
+    usart.ctrla.modify(|_, w| w.enable().bit(false));
+    usart.ctrla.modify(|_, w| w.enable().bit(true));
+    timer::timer().delay(200);
+    println!("Enabling uart");
+    */
 
+    let uuart = sercom0::Uart::new();
+    uuart.disable();
+    timer::timer().delay(200);
+    uuart.enable();
+
+    println!("Custom write");
+    for i in 33u16..3500u16 {
+        uuart.write_char(i);
     }
+    println!("After write");
 
+    println!("DRE: {:x?}", usart.intflag.read().dre().bit());
     loop {
         timer::timer().delay(200);
         led.set_low().unwrap();
         timer::timer().delay(200);
         println!("Hello World from within arduino rust with globals");
         led.set_high().unwrap();
-
-
 
         /*
         for ch in 33..127 {
