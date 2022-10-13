@@ -23,7 +23,7 @@ mod sercom0;
 mod syncronization;
 mod timer;
 
-use generic::{ResetValue, Readable, Reg, Writeable, R, W};
+use generic::{Readable, Reg, ResetValue, Writeable, R, W};
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
@@ -86,29 +86,9 @@ fn main() -> ! {
         pins.tx,
     );
 
-
     let usart = unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart() };
 
-
     console::console_init(uart);
-
-    println!("Debug info");
-    println!("SERCOM0: {:x?}", sercom0::SERCOM5::ptr() as u32);
-    println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
-    println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
-    println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
-    println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
-    println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
-    println!("CTRLA: {:x?}", usart.ctrla.read().bits());
-    println!("CTRLB: {:x?}", usart.ctrlb.read().bits());
-    
-    /*
-    println!("Disabling uart");
-    usart.ctrla.modify(|_, w| w.enable().bit(false));
-    usart.ctrla.modify(|_, w| w.enable().bit(true));
-    timer::timer().delay(200);
-    println!("Enabling uart");
-    */
 
     let uuart = sercom0::Uart::new();
     uuart.disable();
@@ -116,12 +96,11 @@ fn main() -> ! {
     uuart.enable();
 
     println!("Custom write");
-    for i in 33u16..3500u16 {
+    for i in 33u16..124u16 {
         uuart.write_char(i);
     }
     println!("After write");
 
-    println!("DRE: {:x?}", usart.intflag.read().dre().bit());
     loop {
         timer::timer().delay(200);
         led.set_low().unwrap();

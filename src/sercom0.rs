@@ -1,7 +1,6 @@
 use core::marker::PhantomData;
 use core::ops::Deref;
 
-use crate::_print;
 
 pub struct SERCOM0 {
     _marker: PhantomData<*const ()>,
@@ -77,31 +76,41 @@ pub struct Uart {
 
 impl Uart {
     pub fn new() -> Self {
+        /*
+        println!("Debug info");
+        println!("SERCOM0: {:x?}", sercom0::SERCOM5::ptr() as u32);
+        println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
+        println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
+        println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
+        println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
+        println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
+        println!("CTRLA: {:x?}", usart.ctrla.read().bits());
+        println!("CTRLB: {:x?}", usart.ctrlb.read().bits());
+         */
         Self {
-            usart: unsafe { SERCOM5::ptr().as_ref().unwrap().usart() }
+            usart: unsafe { SERCOM5::ptr().as_ref().unwrap().usart() },
         }
     }
 
     pub fn disable(&self) {
-        crate::println!("Disabling uart");
         self.usart.ctrla.modify(|_, w| w.enable().bit(false));
     }
 
     pub fn enable(&self) {
-        self.usart.ctrla.modify(|_, w| w.enable().bit(true));        
-        crate::println!("Enabling uart");
+        self.usart.ctrla.modify(|_, w| w.enable().bit(true));
     }
 
     // pushes a data into the data register, will block if the txc
-    // is not ready for data. 
+    // is not ready for data.
     pub fn write_char(&self, c: u16) {
         // loop till we can write data.
-        while self.usart.intflag.read().dre().bit() && !self.usart.intflag.read().txc().bit() {
+        while self.usart.intflag.read().dre().bit() && !self.usart.intflag.read().txc().bit() {}
+        unsafe {
+            self.usart.data.write(|w| w.data().bits(c));
         }
-        unsafe { self.usart.data.write(|w| w.data().bits(c)); }
         // after loop
         // while self.usart.intflag.read().dre().bit() && !self.usart.intflag.read().txc().bit() {
-    //}
+        //}
     }
 }
 

@@ -10,7 +10,6 @@ pub trait ResetValue {
     fn reset_value() -> Self::Type;
 }
 
-
 pub struct Reg<U, REG> {
     register: vcell::VolatileCell<U>,
     _marker: marker::PhantomData<REG>,
@@ -26,7 +25,6 @@ where
         self.register.as_ptr()
     }
 }
-
 
 impl<U, REG> Reg<U, REG>
 where
@@ -45,7 +43,7 @@ where
 impl<U, REG> Reg<U, REG>
 where
     Self: ResetValue<Type = U> + Writeable,
-    U: Copy
+    U: Copy,
 {
     #[inline(always)]
     pub fn write<F>(&self, f: F)
@@ -56,11 +54,11 @@ where
             f(&mut W {
                 bits: Self::reset_value(),
                 _reg: marker::PhantomData,
-            }).bits,
+            })
+            .bits,
         );
     }
 }
-
 
 impl<U, REG> Reg<U, REG>
 where
