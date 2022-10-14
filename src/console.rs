@@ -39,14 +39,12 @@ impl UartInner {
 impl fmt::Write for UartInner {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for c in s.chars() {
+
             self.write_char(c);
-
-            let usart =  unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart()  };
-
-                // wait till the dre bit is empty.
-                while !usart.intflag.read().txc().bit() {
-                    
-            }
+            
+            let usart = sercom0::Uart::new();            
+            // wait till the dre bit is empty.
+            while !usart.usart.intflag.read().txc().bit() {}
             // crate::timer::timer().delay(100);
         }
         Ok(())

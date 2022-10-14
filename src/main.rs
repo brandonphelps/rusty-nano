@@ -22,6 +22,7 @@ mod generic;
 mod sercom0;
 mod syncronization;
 mod timer;
+pub(crate) mod ring_buffer;
 
 use generic::{Readable, Reg, ResetValue, Writeable, R, W};
 
@@ -77,7 +78,7 @@ fn main() -> ! {
         pins.miso);
     */
 
-    let uart = bsp::uart(
+    let mut uart = bsp::uart(
         &mut clocks,
         9600.hz(),
         peripherals.SERCOM5,
@@ -86,26 +87,34 @@ fn main() -> ! {
         pins.tx,
     );
 
+    timer::timer().delay(1000);
+    // unsafe { uart.write_data(65); }
+    timer::timer().delay(1000);
+
     let usart = unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart() };
 
     console::console_init(uart);
 
-    let uuart = sercom0::Uart::new();
-    uuart.disable();
-    timer::timer().delay(200);
-    uuart.enable();
+    let mut uuart = sercom0::Uart::new();
+    // uuart.disable();
+    // timer::timer().delay(200);
+    // uuart.enable();
 
-    println!("Custom write");
+    // println!("Custom write");
     for i in 33u16..124u16 {
         uuart.write_char(i);
+        // timer::timer().delay(200);
     }
-    println!("After write");
+//    println!("After write");
 
-    loop {
+    let mut i = 0;
+    while i < 10 {
         timer::timer().delay(200);
         led.set_low().unwrap();
         timer::timer().delay(200);
-        println!("Hello World from within arduino rust with globals");
+        // println!("Hello World from within arduino rust with globals");
+        uuart.write_char(65);
+        uuart.write_char(b'\n' as u16);
         led.set_high().unwrap();
 
         /*
@@ -113,6 +122,15 @@ fn main() -> ! {
             uart.write(ch).unwrap();
             //delay.delay_ms(500u16);
         }
-        */
+         */
+        i += 1;
+    }
+
+    loop {
+        timer::timer().delay(200);
+        led.set_low().unwrap();
+        uuart.maintain();
+        timer::timer().delay(200);
+        led.set_high().unwrap();
     }
 }

@@ -1,7 +1,6 @@
 use core::marker::PhantomData;
 use core::ops::Deref;
 
-
 pub struct SERCOM0 {
     _marker: PhantomData<*const ()>,
 }
@@ -71,7 +70,8 @@ pub struct USART {
 }
 
 pub struct Uart {
-    usart: &'static USART,
+    pub usart: &'static USART,
+    ring_buffer: crate::ring_buffer::RingBuffer<u16, 200>,
 }
 
 impl Uart {
@@ -89,6 +89,7 @@ impl Uart {
          */
         Self {
             usart: unsafe { SERCOM5::ptr().as_ref().unwrap().usart() },
+            ring_buffer: crate::ring_buffer::RingBuffer::new(),
         }
     }
 
@@ -102,15 +103,29 @@ impl Uart {
 
     // pushes a data into the data register, will block if the txc
     // is not ready for data.
-    pub fn write_char(&self, c: u16) {
+    pub fn write_char(&mut self, c: u16) -> Result<(), &'static str> {
         // loop till we can write data.
-        while self.usart.intflag.read().dre().bit() && !self.usart.intflag.read().txc().bit() {}
+        if self.usart.intflag.read().dre().bit() { 
+            // should be good to write data.
+        } else {
+            self.ring_buffer.store_value(c);
+        }
         unsafe {
             self.usart.data.write(|w| w.data().bits(c));
         }
-        // after loop
-        // while self.usart.intflag.read().dre().bit() && !self.usart.intflag.read().txc().bit() {
-        //}
+        //  do flush op
+        while !self.usart.intflag.read().txc().bit() {
+        }
+        Ok(())
+    }
+
+    pub fn maintain(&mut self) {
+        match self.ring_buffer.read() {
+            Some(r) => {
+                self.write_char(r);
+            },
+            None => {}
+        }
     }
 }
 
