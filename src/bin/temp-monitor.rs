@@ -43,7 +43,8 @@ fn main() -> ! {
         pins.miso);
     */
 
-    let mut uart = bsp::uart(
+    // used to do uart configuration.
+    let uart = bsp::uart(
         &mut clocks,
         9600.hz(),
         peripherals.SERCOM5,
@@ -53,24 +54,13 @@ fn main() -> ! {
     );
 
     timer::timer().delay(1000);
-    // unsafe { uart.write_data(65); }
     timer::timer().delay(1000);
-
-    let usart = unsafe { sercom0::SERCOM5::ptr().as_ref().unwrap().usart() };
-
     console::console_init(uart);
 
     let mut uuart = sercom0::Uart::new();
-    // uuart.disable();
-    // timer::timer().delay(200);
-    // uuart.enable();
-
-    // println!("Custom write");
     for i in 33u16..124u16 {
-        uuart.write_char(i);
-        // timer::timer().delay(200);
+        uuart.write_char(i).unwrap();
     }
-//    println!("After write");
 
     let mut i = 0;
     while i < 10 {
@@ -78,16 +68,9 @@ fn main() -> ! {
         led.set_low().unwrap();
         timer::timer().delay(200);
         // println!("Hello World from within arduino rust with globals");
-        uuart.write_char(65);
-        uuart.write_char(b'\n' as u16);
+        uuart.write_char(65).unwrap();
+        uuart.write_char(b'\n' as u16).unwrap();
         led.set_high().unwrap();
-
-        /*
-        for ch in 33..127 {
-            uart.write(ch).unwrap();
-            //delay.delay_ms(500u16);
-        }
-         */
         i += 1;
     }
 

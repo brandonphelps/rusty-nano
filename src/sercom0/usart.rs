@@ -1,3 +1,5 @@
+#![allow(non_camel_case_types)]
+
 pub type CTRLA = crate::Reg<u32, _CTRLA>;
 pub struct _CTRLA;
 

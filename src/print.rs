@@ -9,7 +9,7 @@ use crate::console;
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     // todo: handle result.
-    console::console().write_fmt(args);
+    console::console().write_fmt(args).unwrap();
 }
 
 /// Prints without a newline.

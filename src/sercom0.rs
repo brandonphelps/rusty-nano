@@ -122,7 +122,7 @@ impl Uart {
     pub fn maintain(&mut self) {
         match self.ring_buffer.read() {
             Some(r) => {
-                self.write_char(r);
+                self.write_char(r).unwrap();
             },
             None => {}
         }
