@@ -76,17 +76,6 @@ pub struct Uart {
 
 impl Uart {
     pub fn new() -> Self {
-        /*
-        println!("Debug info");
-        println!("SERCOM0: {:x?}", sercom0::SERCOM5::ptr() as u32);
-        println!("USART: {:x?}", core::ptr::addr_of!(*usart) as u32);
-        println!("CTRLA: {:x?}", core::ptr::addr_of!(usart.ctrla) as u32);
-        println!("CTRLB: {:x?}", core::ptr::addr_of!(usart.ctrlb) as u32);
-        println!("rxpl: {:x?}", core::ptr::addr_of!(usart.rxpl) as u32);
-        println!("dbgctrl: {:x?}", core::ptr::addr_of!(usart.dbgctrl) as u32);
-        println!("CTRLA: {:x?}", usart.ctrla.read().bits());
-        println!("CTRLB: {:x?}", usart.ctrlb.read().bits());
-         */
         Self {
             usart: unsafe { SERCOM5::ptr().as_ref().unwrap().usart() },
             ring_buffer: crate::ring_buffer::RingBuffer::new(),
