@@ -12,10 +12,13 @@ harness = false # don't use the standard harnest
 # defmt-test stuff
 
 [dev-dependencies]
-defmt = "0.2.3"
-defmt-rtt = "0.2.0"
-defmt-test = "0.2.0"
-panic-probe = { version = "^0.2.0", features = ["print-defmt"] }
+
+arduino_nina = { path = "../" }
+
+defmt = "0.3.2"
+defmt-rtt = "0.4.0"
+defmt-test = "0.3.0"
+panic-probe = { version = "^0.3.0", features = ["print-defmt"] }
 
 
 [profile.dev]

@@ -1,6 +1,6 @@
 
 [target.thumbv6m-none-eabi]
-runner = 'echo'
+runner = '.\test-runner.bat'
 
 
 
