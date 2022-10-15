@@ -1,78 +1,20 @@
+// using arduino nano 33 iot and MCP9808 report out current temperature. 
+// overall goal is minimize the amount of external libraries used to 
+// provide an understanding of lower level systems and provide
+// hal api design. 
+
 #![no_std]
 #![no_main]
 #![feature(format_args_nl)]
 
-use core::fmt;
-
-use arduino_nano33iot as bsp;
-use bsp::hal;
-
 #[cfg(not(feature = "use_semihosting"))]
 use panic_halt as _;
 
-use bsp::entry;
+use arduino_nina::{Peripherals, CorePeripherals, GenericClockController, bsp, Delay};
+use arduino_nina::entry;
 
-use hal::clock::GenericClockController;
-use hal::delay::Delay;
-use hal::pac::{CorePeripherals, Peripherals};
-use hal::prelude::*;
-
-mod console;
-mod generic;
-mod sercom0;
-mod syncronization;
-mod timer;
-pub(crate) mod ring_buffer;
-
-use generic::{Readable, Reg, ResetValue, Writeable, R, W};
-
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    // todo: handle result.
-    console::console().write_fmt(args);
-}
-
-/// Prints without a newline.
-///
-/// Carbon copy from <https://doc.rust-lang.org/src/std/macros.rs.html>
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => (_print(format_args!($($arg)*)));
-}
-
-/// Prints with a newline.
-///
-/// Carbon copy from <https://doc.rust-lang.org/src/std/macros.rs.html>
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ({
-        _print(format_args_nl!($($arg)*));
-    })
-}
-
-pub fn blink_led() -> ! {
-    let mut peripherals = Peripherals::take().unwrap();
-    let core = CorePeripherals::take().unwrap();
-    let mut clocks = GenericClockController::with_internal_32kosc(
-        peripherals.GCLK,
-        &mut peripherals.PM,
-        &mut peripherals.SYSCTRL,
-        &mut peripherals.NVMCTRL,
-    );
-
-    let pins = bsp::Pins::new(peripherals.PORT);
-    let mut led: bsp::Led = pins.led_sck.into();
-    let delay = Delay::new(core.SYST, &mut clocks);
-    timer::set_timer(delay);
-    
-    loop {
-        timer::timer().delay(200);
-        led.set_low().unwrap();
-        timer::timer().delay(200);
-        led.set_high().unwrap();
-    }
-}
+use arduino_nina::{timer, sercom0, console};
+use arduino_nina::*;
 
 #[entry]
 fn main() -> ! {

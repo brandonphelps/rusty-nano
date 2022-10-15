@@ -22,7 +22,7 @@ struct State {
 
 #[defmt_test::tests]
 mod tests {
-
+    use super::State;
     #[init]
     fn init() -> State {
         let p = arduino_nina::sercom0::Uart::new();
