@@ -16,9 +16,19 @@ fn panic(_info: &PanicInfo) -> ! {
     blink_led()
 }
 
+struct State {
+}
+
 
 #[defmt_test::tests]
 mod tests {
+
+    #[init]
+    fn init() -> State {
+        let p = arduino_nina::sercom0::Uart::new();
+
+        State { }
+    }
 
     #[test]
     fn ground_is_low() {

@@ -15,6 +15,9 @@ use hal::prelude::*;
 
 mod timer;
 mod syncronization;
+mod sercom0;
+
+pub use sercom0::Uart;
 
 pub fn blink_led() -> ! {
     let mut peripherals = Peripherals::take().unwrap();
