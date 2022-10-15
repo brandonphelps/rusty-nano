@@ -1,3 +1,6 @@
+#![cfg(test)]
+
+
 use core::marker::PhantomData;
 use core::ops::Deref;
 
@@ -134,8 +137,4 @@ pub mod usart;
 #[cfg(test)]
 mod tests {
 
-    use std::mem::size_of;
-
-    #[test]
-    fn test_size() {}
 }

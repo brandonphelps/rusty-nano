@@ -1,4 +1,5 @@
 
+
 pub struct RingBuffer<T, const N: usize>
 {
     buffer: [T; N],
@@ -47,5 +48,12 @@ impl<T: Default + Copy, const N: usize> RingBuffer<T, N> {
 
 #[cfg(test)]
 mod tests {
-    
+
+    use super::*;
+
+    #[test]
+    fn ring_buffer_new() {
+        let ring_buffer: RingBuffer::<u8, 10> = RingBuffer::new();
+        
+    }
 }

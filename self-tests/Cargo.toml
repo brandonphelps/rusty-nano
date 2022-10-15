@@ -1,0 +1,22 @@
+
+[package]
+name = "nina-rust-tests"
+publish = false
+version = "0.0.0"
+
+[[test]]
+name = "gpio-input-floating"
+harness = false # don't use the standard harnest
+
+
+# defmt-test stuff
+
+[dev-dependencies]
+defmt = "0.2.3"
+defmt-rtt = "0.2.0"
+defmt-test = "0.2.0"
+panic-probe = { version = "^0.2.0", features = ["print-defmt"] }
+
+
+[profile.dev]
+opt-level = "s"
