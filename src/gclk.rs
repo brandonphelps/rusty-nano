@@ -1,4 +1,7 @@
 
+use core::ops::Deref;
+use core::marker::PhantomData;
+
 #[repr(C)]
 pub struct RegisterBlock { 
 
@@ -56,3 +59,25 @@ impl crate::Writeable for GENDIV {}
 pub mod gendiv;
 
 
+
+
+
+pub struct GCLK {
+    _marker: PhantomData<*const ()>,
+}
+
+unsafe impl Send for GCLK {}
+
+impl GCLK {
+    pub const fn ptr() -> *const RegisterBlock {
+        0x4000_0c00 as *const _
+    }
+}
+
+impl Deref for GCLK {
+    type Target = RegisterBlock;
+    #[inline(always)]
+    fn deref(&self) -> &Self::Target {
+        unsafe { &*GCLK::ptr() }
+    }
+}

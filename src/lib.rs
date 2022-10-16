@@ -24,7 +24,7 @@ pub mod timer;
 pub mod ring_buffer;
 pub mod print;
 
-use generic::{Readable, Reg, ResetValue, Writeable, R, W};
+use generic::{Readable, Reg, ResetValue, Writeable, R, W, Variant};
 
 
 pub use sercom0::Uart;
