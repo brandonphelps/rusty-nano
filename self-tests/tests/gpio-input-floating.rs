@@ -14,6 +14,9 @@ use defmt_rtt as _;
 
 use arduino_nina::*;
 
+
+use arduino_nina::console::interface::Write;
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     // todo: make it so we don't need to pull in all this extra stuff 
@@ -59,7 +62,11 @@ fn panic(info: &PanicInfo) -> ! {
     if let Some(a) = info.message() {
         arduino_nina::print::_print(*a);
     }
-    
+
+    fn writer<W: Write>(f: &mut W, s: &str) -> Result<(), ()> {
+        f.write_fmt(format_args!("{}", s));
+        Ok(())
+    }
 
     // attempt to get a uart handle for printing.
     let mut uart = arduino_nina::sercom0::Uart::new();
@@ -93,7 +100,11 @@ mod tests {
     
 
     #[test]
+    fn 
+
+
+    #[test]
     fn ground_is_low() {
-        assert_eq!(1,2, "one != two");          
+        assert_eq!(1,1, "one != two");          
     }
 }

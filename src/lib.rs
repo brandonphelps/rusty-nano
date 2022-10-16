@@ -1,6 +1,8 @@
 #![no_std]
 #![feature(format_args_nl)]
 
+#![deny(warnings)]
+
 pub use arduino_nano33iot as bsp;
 use bsp::hal;
 
@@ -16,6 +18,7 @@ pub use hal::prelude::*;
 pub mod console;
 mod generic;
 pub mod sercom0;
+pub mod gclk;
 mod syncronization;
 pub mod timer;
 pub mod ring_buffer;
