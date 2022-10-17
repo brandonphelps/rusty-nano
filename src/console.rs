@@ -32,7 +32,7 @@ struct UartInner {
 impl UartInner {
     fn write_char(&mut self, c: char) {
         // todo: handle write result.
-        self.value.lock(|inner| inner.write(c as u8));
+        self.value.lock(|inner| inner.write(c as u8)).unwrap();
     }
 }
 

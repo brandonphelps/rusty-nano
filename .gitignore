@@ -1,2 +1,6 @@
 /target
+self-tests/target
 *~
+/self-tests/test.hex
+/self-tests/test-runner.bat
+/self-tests/test.bin

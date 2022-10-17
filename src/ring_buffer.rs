@@ -7,7 +7,6 @@ pub struct RingBuffer<T, const N: usize>
     tail: usize,
 }
 
-
 impl<T: Default + Copy, const N: usize> RingBuffer<T, N> {
     pub fn new() -> Self {
         Self {

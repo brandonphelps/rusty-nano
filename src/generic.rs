@@ -125,3 +125,15 @@ impl<U, REG> W<U, REG> {
         self
     }
 }
+
+
+
+
+#[doc = "Used if enumerated values cover not the whole range."]
+#[derive(Clone, Copy, PartialEq)]
+pub enum Variant<U, T> {
+    #[doc = " Expected variant."]
+    Val(T),
+    #[doc = " Raw bits."]
+    Res(U),
+}
