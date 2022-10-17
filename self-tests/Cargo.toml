@@ -5,9 +5,9 @@ publish = false
 version = "0.0.0"
 autotests = false
 
-[[test]]
-name = "gpio-input-floating"
-harness = false # don't use the standard harnest
+# [[test]]
+# name = "gpio-input-floating"
+# harness = false # don't use the standard harnest
 
 [[test]]
 name = "gclk-tests"

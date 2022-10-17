@@ -114,6 +114,17 @@ impl<FI> R<bool, FI> {
     }
 }
 
+impl<U, T, FI> PartialEq<FI> for R<U, T>
+where
+    U: PartialEq,
+    FI: Copy + Into<U>,
+{
+    #[inline(always)]
+    fn eq(&self, other: &FI) -> bool {
+        self.bits.eq(&(*other).into())
+    }
+}
+
 pub struct W<U, REG> {
     pub(crate) bits: U,
     _reg: marker::PhantomData<REG>,

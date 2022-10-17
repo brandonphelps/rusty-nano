@@ -24,9 +24,10 @@ struct State {
 mod tests {
     use super::State;
     
-    #[test]
-    fn ground_is_low() {
-        arduino_nina::print::_print(format_args!("{}", "Running ground is low"));
-        assert_eq!(1,1, "one != two");          
-    }
+    // commented out since test filtering doesn't work? 
+    // #[test]
+    // fn ground_is_low() {
+    //     arduino_nina::print::_print(format_args!("{}", "Running ground is low"));
+    //     assert_eq!(1,1, "one != two");          
+    // }
 }

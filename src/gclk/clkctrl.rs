@@ -59,14 +59,11 @@ impl <'a> ID_W<'a> {
         self.variant(ID_A::DFLL48)
     }
 
-    
     pub unsafe fn bits(self, value: u8) -> &'a mut W {
         self.w.bits = (self.w.bits & !0x3f) | ((value as u16) & 0x3f);
         self.w
     }
 }
-
-
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[repr(u8)]
