@@ -1,4 +1,3 @@
-
 // #![deny(warnings)]
 #![no_std]
 #![no_main]
@@ -8,25 +7,24 @@ extern crate arduino_nina;
 use arduino_nina::blink_led;
 
 extern crate defmt_rtt;
+#[allow(unused)]
 use defmt_rtt as _;
 
 use arduino_nina::*;
-
 use arduino_nina::console::interface::Write;
 
 include!{"panic_handler.rs"}
 
-struct State {
-}
-
-
 #[defmt_test::tests]
 mod tests {
-    use super::State;
-    
+
+    use super::*;
+
     #[test]
-    fn ground_is_low() {
-        arduino_nina::print::_print(format_args!("{}", "Running ground is low"));
+    fn gclk_read() {
+        
+        // can't find println! for some reason
+        arduino_nina::print::_print(format_args!("{}", "Running gclk_read"));
         assert_eq!(1,1, "one != two");          
     }
 }
